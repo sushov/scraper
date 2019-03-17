@@ -24,27 +24,27 @@
     $results = pq(".filter")->find(".letter");
     $re = '/<a class="letter" href="(.*?)">(.*?)<\/a>/m';
     preg_match_all($re, $results, $matches, PREG_SET_ORDER, 0);
-    // foreach ($matches as $match) {
-    //   $spider->fetchPage('https://propertylink.estatesgazette.com/'.$match[1]);
-    //   $second_scrap = $spider->html;
-    //   PhpQuery::newDocumentHTML($second_scrap);
-    //   $results2 = pq(".agents__result-body")->find(".btn");
-    //   $re2 = '/<a class="btn btn--block btn--outline js-ga-click-event " data-ga-name="Agent details" data-ga-value="(.*?)" href="(.*?)">View Profile<\/a>/ms';
-    //   preg_match_all($re2, $results2, $matches2, PREG_SET_ORDER, 0);
-    //   foreach ($matches2 as $matche2) {
-    //     $spider->fetchPage('https://propertylink.estatesgazette.com'.$matche2[2]);
-    //     $third_scrap = $spider->html;
-    //     PhpQuery::newDocumentHTML($third_scrap);
-    //     $agentName = pq("h2")->text();
-    //     $agentDescription = pq("#about")->text();
-    //     $office_location = preg_replace('/\s+/', '', pq('#offices')->find('div:first')->find('p:first')->text());
-    //     $numberOfProperties = pq(".agents__details-listing-count")->text();
-    //     $servicesProvided = pq("#services")->text();
-    //     $estatesGazetteURL = "https://propertylink.estatesgazette.com".$matche2[2];
-    //     $website = pq(".js-gwa-link-item")->attr("href");
-    //     //merge all above data in an array here
-    //   }
-    // }
+    foreach ($matches as $match) {
+      $spider->fetchPage('https://propertylink.estatesgazette.com/'.$match[1]);
+      $second_scrap = $spider->html;
+      PhpQuery::newDocumentHTML($second_scrap);
+      $results2 = pq(".agents__result-body")->find(".btn");
+      $re2 = '/<a class="btn btn--block btn--outline js-ga-click-event " data-ga-name="Agent details" data-ga-value="(.*?)" href="(.*?)">View Profile<\/a>/ms';
+      preg_match_all($re2, $results2, $matches2, PREG_SET_ORDER, 0);
+      foreach ($matches2 as $matche2) {
+        $spider->fetchPage('https://propertylink.estatesgazette.com'.$matche2[2]);
+        $third_scrap = $spider->html;
+        PhpQuery::newDocumentHTML($third_scrap);
+        $agentName = pq("h2")->text();
+        $agentDescription = pq("#about")->text();
+        $office_location = preg_replace('/\s+/', '', pq('#offices')->find('div:first')->find('p:first')->text());
+        $numberOfProperties = pq(".agents__details-listing-count")->text();
+        $servicesProvided = pq("#services")->text();
+        $estatesGazetteURL = "https://propertylink.estatesgazette.com".$matche2[2];
+        $website = pq(".js-gwa-link-item")->attr("href");
+        //merge all above data in an array here
+      }
+    }
     //save the collected data in a csv file here
     saveCsv();
   }
