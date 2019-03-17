@@ -8,13 +8,14 @@
 
   // This is our starting point. Change this to whatever URL you want.
   $url = 'https://propertylink.estatesgazette.com/find-an-agent?a_to_z=a';
+  $agents = [];
 
-  // if (!isset($_SERVER["argc"]) || !$_SERVER["argc"])
-  // {
-  //   echo "This file is intended to be run from the command-line.";
+  if (!isset($_SERVER["argc"]) || !$_SERVER["argc"])
+  {
+    echo "This file is intended to be run from the command-line.";
 
-  //   exit();
-  // }
+    exit();
+  }
 
   function getData($url){
     $spider = new WebSpider(); 
@@ -35,22 +36,25 @@
         $spider->fetchPage('https://propertylink.estatesgazette.com'.$matche2[2]);
         $third_scrap = $spider->html;
         PhpQuery::newDocumentHTML($third_scrap);
-        $agentName = pq("h2")->text();
-        $agentDescription = pq("#about")->text();
-        $office_location = preg_replace('/\s+/', '', pq('#offices')->find('div:first')->find('p:first')->text());
-        $numberOfProperties = pq(".agents__details-listing-count")->text();
-        $servicesProvided = pq("#services")->text();
-        $estatesGazetteURL = "https://propertylink.estatesgazette.com".$matche2[2];
-        $website = pq(".js-gwa-link-item")->attr("href");
-        //merge all above data in an array here
+        $agentName[] = pq("h2")->text();
+        $agents['agentDescription'] = pq("#about")->text();
+        $agents['office_info'] = preg_replace('/\s+/', '', pq('#offices')->text());
+        $agents['numberOfProperties'] = pq(".agents__details-listing-count")->text();
+          $agents['servicesProvided'] = pq("#services")->text();
+        $agents['estatesGazetteURL'] = "https://propertylink.estatesgazette.com".$matche2[2];
+        $agents['website'] = pq(".js-gwa-link-item")->attr("href");
+       // merge all above data in an array here
       }
     }
-    //save the collected data in a csv file here
-    saveCsv();
+    saveCsv($agents);
   }
 
-  function saveCsv()
+  function saveCsv($data)
   {
+     // echo "<pre>";print_r($data);die;
+    // foreach ($data as $key => $row) {
+    //      echo "<pre>";print_r($row);
+    // }die;
     // output headers so that the file is downloaded rather than displayed
     header('Content-type: text/csv');
     header('Content-Disposition: attachment; filename="agents.csv"');
@@ -63,20 +67,12 @@
     $file = fopen('php://output', 'w');
      
     // send the column headers
-    fputcsv($file, array('Column 1', 'Column 2', 'Column 3', 'Column 4', 'Column 5'));
-     
-    $data = array(
-    array('Data 11', 'Data 12', 'Data 13', 'Data 14', 'Data 15'),
-    array('Data 21', 'Data 22', 'Data 23', 'Data 24', 'Data 25'),
-    array('Data 31', 'Data 32', 'Data 33', 'Data 34', 'Data 35'),
-    array('Data 41', 'Data 42', 'Data 43', 'Data 44', 'Data 45'),
-    array('Data 51', 'Data 52', 'Data 53', 'Data 54', 'Data 55')
-    );
+    fputcsv($file, array('agentName', 'agentDescription', 'office_info', 'numberOfProperties', 'servicesProvided', 'estatesGazetteURL', 'website'));
      
     // output each row of the data
     foreach ($data as $row)
     {
-    fputcsv($file, $row);
+    fputcsv($file, $data);
     }
      
     exit();
